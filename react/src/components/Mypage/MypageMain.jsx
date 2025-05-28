@@ -86,7 +86,7 @@ const MypageMain = () => {
               onClick={() => {
                 const role = sessionStorage.getItem("userRole"); // 사용자 권한 확인
                 if (role === "ROLE_ADMIN") {
-                  navi("/admin/mypage_qna"); // 관리자용 QnA 페이지
+                  navi("/mypage_qna"); // 관리자용 QnA 페이지
                 } else {
                   navi("/mypage_qna"); // 일반 사용자용 QnA 페이지
                 }
