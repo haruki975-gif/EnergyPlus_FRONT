@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const API_URL = import.meta.env.VITE_API_BASE_URL;
+const API_URL = window.ENV?.API_URL || "http://localhost:80";
 
 // 로그인 상태 확인
 export const checkAuthStatus = () => {
@@ -34,11 +34,8 @@ export const getKakaoLoginURL = () => {
       return response.data.loginUrl;
     })
     .catch((error) => {
-      const KAKAO_CLIENT_ID =
-        window.ENV?.KAKAO_CLIENT_ID || import.meta.env.VITE_KAKAO_CLIENT_ID;
-      const KAKAO_REDIRECT_URI =
-        window.ENV?.KAKAO_REDIRECT_URI ||
-        import.meta.env.VITE_KAKAO_REDIRECT_URI;
+      const KAKAO_CLIENT_ID = window.ENV?.KAKAO_CLIENT_ID;
+      const KAKAO_REDIRECT_URI = window.ENV?.KAKAO_REDIRECT_URI;
 
       const backupUrl = `https://kauth.kakao.com/oauth/authorize?client_id=${KAKAO_CLIENT_ID}&redirect_uri=${encodeURIComponent(
         KAKAO_REDIRECT_URI
@@ -61,9 +58,8 @@ export const processKakaoLogin = (code) => {
     });
 };
 
-// 로그아웃 함수
+// 로그아웃
 export const logout = () => {
-  // 현재 저장된 토큰 가져오기
   const token = sessionStorage.getItem("accessToken");
 
   // 토큰이 있는 경우 백엔드에 로그아웃 요청
@@ -79,20 +75,9 @@ export const logout = () => {
         }
       )
       .then(() => {
-        // 성공 시 세션 스토리지 클리어
-        clearAuthData();
-      })
-      .catch((error) => {
-        // 에러 발생해도 세션 스토리지는 클리어
-        if (process.env.NODE_ENV === "development") {
-          console.error("로그아웃 오류:", error);
-        }
+        // 성공 ->세션 스토리지 클리어
         clearAuthData();
       });
-  } else {
-    // 토큰이 없는 경우 바로 세션 스토리지 클리어
-    clearAuthData();
-    return Promise.resolve();
   }
 };
 
