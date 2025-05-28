@@ -25,7 +25,7 @@ export const login = (userEmail, userPassword) => {
 };
 
 // 카카오 로그인 URL 가져오기
-export const getKaKaoLoginURL = () => {
+export const getKakaoLoginURL = () => {
   // 백엔드에서 카카오 로그인 URL 가져오기
   return axios
     .get(`${API_URL}/oauth2/kakao/url`)
@@ -40,7 +40,10 @@ export const getKaKaoLoginURL = () => {
         window.ENV?.KAKAO_REDIRECT_URI ||
         import.meta.env.VITE_KAKAO_REDIRECT_URI;
 
-      return `https://kauth.kakao.com/oauth/authorize?client_id=${KAKAO_CLIENT_ID}&redirect_uri=${KAKAO_REDIRECT_URI}&response_type=code`;
+      const backupUrl = `https://kauth.kakao.com/oauth/authorize?client_id=${KAKAO_CLIENT_ID}&redirect_uri=${encodeURIComponent(
+        KAKAO_REDIRECT_URI
+      )}&response_type=code`;
+      return backupUrl;
     });
 };
 
@@ -58,13 +61,15 @@ export const processKakaoLogin = (code) => {
     });
 };
 
-// 로그아웃
-export const logout = async () => {
-  try {
-    // 백엔드 로그아웃 요청 (토큰 삭제)
-    const token = sessionStorage.getItem("accessToken");
-    if (token) {
-      await axios.post(
+// 로그아웃 함수
+export const logout = () => {
+  // 현재 저장된 토큰 가져오기
+  const token = sessionStorage.getItem("accessToken");
+
+  // 토큰이 있는 경우 백엔드에 로그아웃 요청
+  if (token) {
+    return axios
+      .post(
         `${API_URL}/auth/logout`,
         {},
         {
@@ -72,21 +77,36 @@ export const logout = async () => {
             Authorization: `Bearer ${token}`,
           },
         }
-      );
-    }
-  } catch (error) {
-    console.error("로그아웃 오류:", error);
-  } finally {
-    // 세션 스토리지 클리어
-    sessionStorage.removeItem("accessToken");
-    sessionStorage.removeItem("refreshToken");
-    sessionStorage.removeItem("userEmail");
-    sessionStorage.removeItem("userName");
-    sessionStorage.removeItem("userRole");
-
-    // 로그인 상태변경 이벤트 발생
-    window.dispatchEvent(new Event("loginStateChanged"));
+      )
+      .then(() => {
+        // 성공 시 세션 스토리지 클리어
+        clearAuthData();
+      })
+      .catch((error) => {
+        // 에러 발생해도 세션 스토리지는 클리어
+        if (process.env.NODE_ENV === "development") {
+          console.error("로그아웃 오류:", error);
+        }
+        clearAuthData();
+      });
+  } else {
+    // 토큰이 없는 경우 바로 세션 스토리지 클리어
+    clearAuthData();
+    return Promise.resolve();
   }
+};
+
+// 인증 데이터 w제거
+const clearAuthData = () => {
+  // sessionStorage에서 모든 인증 관련 데이터 제거
+  sessionStorage.removeItem("accessToken");
+  sessionStorage.removeItem("refreshToken");
+  sessionStorage.removeItem("userEmail");
+  sessionStorage.removeItem("userName");
+  sessionStorage.removeItem("userRole");
+
+  // 로그인 상태 변경 이벤트 발생
+  window.dispatchEvent(new Event("loginStateChanged"));
 };
 
 // 사용자 정보 가져오기
@@ -96,4 +116,34 @@ export const getCurrentUser = () => {
     name: sessionStorage.getItem("userName"),
     role: sessionStorage.getItem("userRole"),
   };
+};
+
+// 토큰 갱신 함수(배포 환경에서 토큰 만료 시 이 함수 사용하기 위함)
+export const refreshToken = () => {
+  // 저장된 리프레시 토큰 가져오기
+  const refreshToken = sessionStorage.getItem("refreshToken");
+
+  if (!refreshToken) {
+    throw new Error("리프레시 토큰이 없습니다.");
+  }
+
+  // 백엔드에 토큰 갱신 요청
+  return axios
+    .post(`${API_URL}/auth/refresh`, {
+      refreshToken: refreshToken,
+    })
+    .then((response) => {
+      // 새로운 토큰을 세션에 저장
+      const { accessToken, refreshToken: newRefreshToken } = response.data;
+      sessionStorage.setItem("accessToken", accessToken);
+      if (newRefreshToken) {
+        sessionStorage.setItem("refreshToken", newRefreshToken);
+      }
+      return response.data;
+    })
+    .catch((error) => {
+      // 토큰 갱신 실패 -> 로그아웃
+      clearAuthData();
+      throw error;
+    });
 };
