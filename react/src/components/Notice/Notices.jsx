@@ -15,57 +15,54 @@ import {
   BackBtn
 } from "../TableStyle/Table.style";
 
-
 const Notices = () => {
+  const navi = useNavigate();
 
-  const [notices, setNotices]             = useState([]);
-  const [page, setPage]                   = useState(0);
-  const [totalCount, setTotalCount]       = useState(0);
-  const [keyword, setKeyword]             = useState("");
-  const size                               = 10;
-  const totalPages                         = Math.ceil(totalCount / size);
-  const navi                         = useNavigate();
-  
-  // 검색
+  // 상태 관리
+  const [notices, setNotices] = useState([]);
+  const [page, setPage] = useState(0);
+  const [totalCount, setTotalCount] = useState(0);
+  const [keyword, setKeyword] = useState("");
   const [searchKeyword, setSearchKeyword] = useState("");
 
+  const size = 10;
+  const totalPages = Math.ceil(totalCount / size);
 
+  const blockSize = 5;
+  const blockIndex = Math.floor(page / blockSize);
+  const startPage = blockIndex * blockSize;
+  const endPage = Math.min(startPage + blockSize, totalPages);
+
+  // 데이터 불러오기
   useEffect(() => {
-    axios.get("http://localhost/notices", {
-      params: { page, keyword: searchKeyword }
-    })
-    .then(res => {
-      setNotices(res.data);
-    })
-    axios.get("http://localhost/notices/pages", {
-      params: { keyword: searchKeyword }
-    })
-    .then(res => {
-      setTotalCount(res.data * size);
-    });
+    axios
+      .get("http://localhost/notices", {
+        params: { page, keyword: searchKeyword }
+      })
+      .then(res => setNotices(res.data));
 
+    axios
+      .get("http://localhost/notices/pages", {
+        params: { keyword: searchKeyword }
+      })
+      .then(res => setTotalCount(res.data * size));
   }, [page, searchKeyword]);
 
-  // 2) 검색 핸들러
+  // 검색
   const handleSearch = () => {
     setPage(0);
     setSearchKeyword(keyword);
   };
+
   const resetSearch = () => {
     setKeyword("");
     setSearchKeyword("");
     setPage(0);
   };
 
-  // 3) 페이징 블록 계산
-  const blockSize  = 5;
-  const blockIndex = Math.floor(page / blockSize);
-  const startPage  = blockIndex * blockSize;
-  const endPage    = Math.min(startPage + blockSize, totalPages);
-
   return (
     <Wrapper>
-      {/* 1) 제목 + 검색창 + 글 작성 버튼 */}
+      {/* 제목 + 검색창 */}
       <HeaderRow>
         <Title>공지사항</Title>
         <SearchBox>
@@ -75,12 +72,11 @@ const Notices = () => {
             onChange={e => setKeyword(e.target.value)}
           />
           <SearchButton onClick={handleSearch}>검색</SearchButton>
-          {keyword && (
-            <SearchButton onClick={resetSearch}>초기화</SearchButton>
-          )}
+          {keyword && <SearchButton onClick={resetSearch}>초기화</SearchButton>}
         </SearchBox>
       </HeaderRow>
-      
+
+      {/* 공지사항 테이블 */}
       <StyledTable>
         <thead>
           <tr>
@@ -104,22 +100,19 @@ const Notices = () => {
         </tbody>
       </StyledTable>
 
-      {/* 3) 결과 없을 때 */}
+      {/* 검색 결과 없음 */}
       {notices.length === 0 && (
         <p style={{ textAlign: "center", marginTop: 20, color: "#888" }}>
           검색 결과가 없습니다.
         </p>
       )}
 
-      {/* 4) 페이징 */}
+      {/* 페이지네이션 */}
       <Pagination>
         <PageBtn onClick={() => setPage(0)} disabled={page === 0}>
           ≪
         </PageBtn>
-        <PageBtn
-          onClick={() => setPage(p => Math.max(p - 1, 0))}
-          disabled={page === 0}
-        >
+        <PageBtn onClick={() => setPage(p => Math.max(p - 1, 0))} disabled={page === 0}>
           {"<"}
         </PageBtn>
 
@@ -147,7 +140,7 @@ const Notices = () => {
         </PageBtn>
       </Pagination>
 
-      {/* 5) 뒤로가기 */}
+      {/* 뒤로가기 */}
       <BackBtn onClick={() => navi(-1)}>뒤로가기</BackBtn>
     </Wrapper>
   );

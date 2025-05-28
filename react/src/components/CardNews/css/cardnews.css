@@ -1,9 +1,9 @@
-button.more-btn {
+.cardnews-container button.more-btn {
   border-color: transparent;
   background: none;
   padding: 0;
 }
-button.more-btn:hover {
+.cardnews-container button.more-btn:hover {
   opacity: 0.65;
 }
 .main-section-header {

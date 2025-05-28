@@ -20,25 +20,6 @@ const CardNewsDetail = () => {
       });
   }, [id]);
 
-  const handleDelete = () => {
-    if (window.confirm("정말 삭제하시겠습니까?")) {
-      axios
-        .delete(`http://localhost:80/admin/cardnews/delete/${id}`, {
-          headers: {
-            Authorization: `Bearer ${sessionStorage.getItem("accessToken")}`,
-          },
-        })
-        .then(() => {
-          alert("삭제 완료!");
-          navigate("/cardnews/list");
-        })
-        .catch((err) => {
-          alert("삭제 실패");
-          console.error(err);
-        });
-    }
-  };
-
   if (!cardNews) return <p>로딩 중...</p>;
 
   return (
@@ -63,15 +44,6 @@ const CardNewsDetail = () => {
       </div>
 
       <div className="cardnew-detail-buttons">
-        <button
-          className="cardnews-btn btn"
-          onClick={() => navigate(`/admin/cardnews/edit/${id}`)}
-        >
-          수정하기
-        </button>
-        <button className="cardnews-btn btn danger" onClick={handleDelete}>
-          삭제하기
-        </button>
         <button
           className="cardnews-btn btn"
           onClick={() => navigate("/cardnews/list")}

@@ -7,7 +7,6 @@ export const Container = styled.div`
   font-family: 'Noto Sans KR', sans-serif;
 `;
 
-
 export const Title = styled.h1`
   font-size: 24px;
   font-weight: 700;
@@ -62,13 +61,11 @@ export const FilterContainer = styled.div`
   border: 1px solid #eaeaea;
 `;
 
-
 export const FilterGroup = styled.div`
   display: flex;
   flex-direction: column;
   min-width: 150px;
 `;
-
 
 export const FilterLabel = styled.label`
   font-size: 13px;
@@ -136,7 +133,6 @@ export const TableCell = styled.td`
   border-bottom: 1px solid #ddd;
 `;
 
-
 export const RoleToggle = styled.button`
   padding: 6px 12px;
   border: none;
@@ -153,31 +149,6 @@ export const RoleToggle = styled.button`
   }
 `;
 
-
-export const GradeBadge = styled.span`
-  display: inline-block;
-  padding: 4px 8px;
-  border-radius: 4px;
-  font-size: 13px;
-  font-weight: 500;
-  background-color: ${(props) => {
-    switch (props.grade) {
-      case '새싹':
-        return '#8BC34A'; // 연한 녹색
-      case '나무':
-        return '#4CAF50'; // 중간 녹색
-      case '숲':
-        return '#2E7D32'; // 짙은 녹색
-      case '지구':
-        return '#1A237E'; // 짙은 파란색
-      default:
-        return '#8BC34A';
-    }
-  }};
-  color: white;
-`;
-
-
 export const StatusBadge = styled.span`
   display: inline-block;
   padding: 4px 8px;
@@ -187,7 +158,6 @@ export const StatusBadge = styled.span`
   background-color: ${(props) => (props.status === '회원' ? '#28a745' : '#dc3545')};
   color: white;
 `;
-
 
 export const Pagination = styled.div`
   display: flex;

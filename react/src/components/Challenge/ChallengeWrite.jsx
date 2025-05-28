@@ -5,12 +5,17 @@ import {
   Wrapper,
   HeaderRow,
   Title,
-  ContentDiv,
-  ContentTitle,
-  ContentDetail,
   BackBtn,
   SearchButton
 } from "../TableStyle/Table.style";
+import {
+  WriteFormWrapper,
+  FormSection,
+  Label,
+  StyledInput,
+  StyledTextarea,
+  StyledFileInput
+} from "../TableStyle/Write.style";
 
 const ChallengeWrite = () => {
   const navi = useNavigate();
@@ -25,21 +30,33 @@ const ChallengeWrite = () => {
   const [file, setFile] = useState(null);
 
   useEffect(() => {
+    const token = sessionStorage.getItem("accessToken");
+    if (!token) {
+      alert("로그인이 필요한 기능입니다.");
+      navi("/login");
+      return;
+    }
+
     if (editId) {
-      // 수정 모드 - 기존 글 불러오기
       axios.get(`http://localhost/challenges/${editId}`)
         .then(res => {
           setForm({
             challengeTitle: res.data.challengeTitle,
             challengeContent: res.data.challengeContent
           });
+
+          const loginUserId = sessionStorage.getItem("userId");
+          if (Number(loginUserId) !== res.data.userId) {
+            alert("본인 글만 수정할 수 있습니다.");
+            navi(-1);
+          }
         })
         .catch(err => {
           console.error("수정할 챌린지 불러오기 실패", err);
           alert("글을 불러올 수 없습니다.");
         });
     }
-  }, [editId]);
+  }, [editId, navi]);
 
   const handleChange = (e) => {
     setForm({
@@ -54,7 +71,6 @@ const ChallengeWrite = () => {
 
   const handleSubmit = async () => {
     try {
-
       const formData = new FormData();
       formData.append("challengeTitle", form.challengeTitle);
       formData.append("challengeContent", form.challengeContent);
@@ -62,22 +78,19 @@ const ChallengeWrite = () => {
         formData.append("file", file);
       }
 
+      const config = {
+        headers: {
+          "Content-Type": "multipart/form-data",
+          Authorization: `Bearer ${sessionStorage.getItem("accessToken")}`
+        }
+      };
+
       if (editId) {
-        // 수정 모드
-        await axios.put(`http://localhost/challenges/${editId}`, formData, {
-          headers: {
-            "Content-Type": "multipart/form-data"
-          }
-        });
+        await axios.put(`http://localhost/challenges/${editId}`, formData, config);
         alert("수정 완료되었습니다!");
         navi(`/challenges/${editId}`);
       } else {
-        // 작성 모드
-        await axios.post(`http://localhost/challenges`, formData, {
-          headers: {
-            "Content-Type": "multipart/form-data"
-          }
-        });
+        await axios.post(`http://localhost/challenges`, formData, config);
         alert("작성 완료되었습니다!");
         navi("/challenges");
       }
@@ -93,34 +106,33 @@ const ChallengeWrite = () => {
         <Title>{editId ? "챌린지 수정" : "챌린지 작성"}</Title>
       </HeaderRow>
 
-      <ContentDiv>
-        <ContentTitle>
-          <input
+      <WriteFormWrapper>
+        <FormSection>
+          <Label>제목</Label>
+          <StyledInput
             type="text"
             name="challengeTitle"
             value={form.challengeTitle}
             onChange={handleChange}
             placeholder="제목을 입력하세요"
-            style={{ width: "100%", padding: "0.5rem", fontSize: "1.2rem" }}
           />
-        </ContentTitle>
+        </FormSection>
 
-        <ContentDetail>
-          <textarea
+        <FormSection>
+          <Label>내용</Label>
+          <StyledTextarea
             name="challengeContent"
             value={form.challengeContent}
             onChange={handleChange}
             placeholder="내용을 입력하세요"
-            style={{ width: "100%", height: "300px", padding: "0.5rem", fontSize: "1rem" }}
           />
-        </ContentDetail>
+        </FormSection>
 
-        <input
-          type="file"
-          onChange={handleFileChange}
-          style={{ marginTop: "1rem" }}
-        />
-      </ContentDiv>
+        <FormSection>
+          <Label>첨부 이미지</Label>
+          <StyledFileInput type="file" onChange={handleFileChange} />
+        </FormSection>
+      </WriteFormWrapper>
 
       <div style={{ display: "flex", gap: "1rem", marginTop: "2rem" }}>
         <SearchButton onClick={handleSubmit}>{editId ? "수정 완료" : "작성 완료"}</SearchButton>

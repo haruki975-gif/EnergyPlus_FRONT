@@ -70,9 +70,14 @@ const ChallengeList = () => {
               placeholder="검색"
               value={keyword}
               onChange={e => setKeyword(e.target.value)}
-              />
+            />
             <SearchButton onClick={handleSearch}>검색</SearchButton>
-            <WriteButton onClick={() => navigate('/challenges/write')}>글 작성</WriteButton>
+
+            {sessionStorage.getItem("accessToken") && (
+              <WriteButton onClick={() => navigate('/challenges/write')}>
+                글 작성
+              </WriteButton>
+            )}
           </SearchBox>
       </HeaderRow>
 
@@ -93,7 +98,11 @@ const ChallengeList = () => {
                 <td>{c.challengeTitle}</td>
                 <td>{c.userName}</td>
                 <td>{c.enrollDate}</td>
-                <td>{c.challengeStatus === 'Y' ? '답변완료' : '확인중'}</td>
+                <td>
+                  {c.challengeStatus === 'Y' || c.challengeStatus === 'R'
+                    ? '답변완료'
+                    : '확인중'}
+                </td>
               </tr>
             ))}
           </tbody>

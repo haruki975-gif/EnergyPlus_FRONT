@@ -27,7 +27,7 @@ const MypageMileVisual = () => {
             Authorization: `Bearer ${token}`,
           },
         });
-        setTotalMile(response.data.totalMileage);
+        setTotalMile(response.data.totalScore);
       } catch(error) {
         console.error("총 마일리지 불러오기 실패", error);
       }

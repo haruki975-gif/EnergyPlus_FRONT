@@ -5,12 +5,17 @@ import {
   Wrapper,
   HeaderRow,
   Title,
-  ContentDiv,
-  ContentTitle,
-  ContentDetail,
   BackBtn,
   SearchButton
 } from "../TableStyle/Table.style";
+import {
+  WriteFormWrapper,
+  FormSection,
+  Label,
+  StyledInput,
+  StyledTextarea,
+  StyledFileInput
+} from "../TableStyle/Write.style";
 
 const ChallengeEdit = () => {
   const { challengeSeq } = useParams();
@@ -44,21 +49,23 @@ const ChallengeEdit = () => {
     });
   };
 
+  const handleFileChange = (e) => {
+    setFile(e.target.files[0]);
+  };
+
   const handleSubmit = async () => {
     const formData = new FormData();
     formData.append("challengeTitle", form.challengeTitle);
     formData.append("challengeContent", form.challengeContent);
-    
     if (file) {
-        formData.append("file", file);
+      formData.append("file", file);
     }
-
-
 
     try {
       await axios.put(`http://localhost/challenges/${challengeSeq}`, formData, {
         headers: {
-            "Content-Type": "multipart/form-data"
+          "Content-Type": "multipart/form-data",
+          Authorization: `Bearer ${sessionStorage.getItem("accessToken")}`
         }
       });
 
@@ -76,34 +83,33 @@ const ChallengeEdit = () => {
         <Title>챌린지 수정</Title>
       </HeaderRow>
 
-      <ContentDiv>
-        <ContentTitle>
-          <input
+      <WriteFormWrapper>
+        <FormSection>
+          <Label>제목</Label>
+          <StyledInput
             type="text"
             name="challengeTitle"
             value={form.challengeTitle}
             onChange={handleChange}
             placeholder="제목을 입력하세요"
-            style={{ width: "100%", padding: "0.5rem", fontSize: "1.2rem" }}
           />
-        </ContentTitle>
+        </FormSection>
 
-        <ContentDetail>
-          <textarea
+        <FormSection>
+          <Label>내용</Label>
+          <StyledTextarea
             name="challengeContent"
             value={form.challengeContent}
             onChange={handleChange}
             placeholder="내용을 입력하세요"
-            style={{ width: "100%", height: "300px", padding: "0.5rem", fontSize: "1rem" }}
           />
-        </ContentDetail>
+        </FormSection>
 
-        <input
-            type="file"
-            onChange={(e) => setFile(e.target.files[0])}
-            style={{ marginTop: "1rem" }}
-            />
-      </ContentDiv>
+        <FormSection>
+          <Label>첨부 이미지</Label>
+          <StyledFileInput type="file" onChange={handleFileChange} />
+        </FormSection>
+      </WriteFormWrapper>
 
       <div style={{ display: "flex", gap: "1rem", marginTop: "2rem" }}>
         <SearchButton onClick={handleSubmit}>수정 완료</SearchButton>

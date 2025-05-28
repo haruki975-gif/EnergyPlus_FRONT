@@ -81,7 +81,7 @@ const AdminNoticeDetail = () => {
           <ContentDetail>{notice.noticeContent}</ContentDetail>
         </ContentDiv>
 
-        <BackBtn onClick={() => navi(-1)}>뒤로가기</BackBtn>
+        <BackBtn onClick={() => navi("/admin/notices")}>목록으로</BackBtn>
       </Wrapper>
     </div>
   );

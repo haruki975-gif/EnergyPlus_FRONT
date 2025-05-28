@@ -11,7 +11,6 @@ import {
   TableCell,
   RoleToggle,
   StatusBadge,
-  GradeBadge,
   Pagination,
   PageButton,
   FilterContainer,
@@ -20,7 +19,7 @@ import {
   FilterSelect,
   ResetButton
 } from './Member.styles';
-
+import AdminSidebar from '../AdminSidebar';
 
 const Member = () => {
   const itemsPerPage = 10;
@@ -30,18 +29,9 @@ const Member = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [filters, setFilters] = useState({
     dateRange: '',
-    grade: '',
     status: '',
     role: ''
   });
-
-  // 마일리지에 따른 등급 구분
-  const getGradeByMileage = (mileage) => {
-    if (mileage > 30000) return '지구';
-    if (mileage > 20000) return '숲';
-    if (mileage > 5000) return '나무';
-    return '새싹'; // 현재 마일리지가 없기에 새싹으로..
-  };
 
   const fetchMembers = async () => {
     const token = sessionStorage.getItem('accessToken');
@@ -51,7 +41,6 @@ const Member = () => {
     params.append('page', currentPage - 1);
     if (searchMember.trim()) params.append('keyword', searchMember);
     if (filters.dateRange) params.append('dateRange', filters.dateRange);
-    if (filters.grade) params.append('grade', filters.grade);
     if (filters.status) params.append('status', filters.status);
     if (filters.role) params.append('role', filters.role);
 
@@ -88,7 +77,7 @@ const Member = () => {
   };
 
   const handleReset = () => {
-    setFilters({ dateRange: '', grade: '', status: '', role: '' });
+    setFilters({ dateRange: '', status: '', role: '' });
     setSearchMember('');
     setCurrentPage(1);
     fetchMembers();
@@ -119,6 +108,8 @@ const Member = () => {
   const paginate = (page) => setCurrentPage(page);
 
   return (
+    <>
+    <AdminSidebar />
     <Container>
       <Title>회원관리</Title>
 
@@ -137,17 +128,6 @@ const Member = () => {
             <option value="3개월">3개월 이내</option>
             <option value="6개월">6개월 이내</option>
             <option value="1년">1년 이내</option>
-          </FilterSelect>
-        </FilterGroup>
-
-        <FilterGroup>
-          <FilterLabel>등급</FilterLabel>
-          <FilterSelect name="grade" value={filters.grade} onChange={handleFilterChange}>
-            <option value="">전체</option>
-            <option value="새싹">새싹</option>
-            <option value="나무">나무</option>
-            <option value="숲">숲</option>
-            <option value="지구">지구</option>
           </FilterSelect>
         </FilterGroup>
 
@@ -178,9 +158,7 @@ const Member = () => {
             <TableHeader>No</TableHeader>
             <TableHeader>아이디</TableHeader>
             <TableHeader>이름</TableHeader>
-            <TableHeader>가입일</TableHeader>
             <TableHeader>역할</TableHeader>
-            <TableHeader>등급</TableHeader>
             <TableHeader>탈퇴</TableHeader>
           </TableRow>
         </thead>
@@ -190,7 +168,6 @@ const Member = () => {
               <TableCell>{(currentPage - 1) * itemsPerPage + idx + 1}</TableCell>
               <TableCell>{member.userEmail}</TableCell>
               <TableCell>{member.userName}</TableCell>
-              <TableCell>{member.joinDate}</TableCell>
               <TableCell>
                 <RoleToggle
                   onClick={() => handleRoleToggle(member.userId, member.role)}
@@ -198,15 +175,6 @@ const Member = () => {
                 >
                   {member.role === 'ROLE_ADMIN' ? '관리자' : '사용자'}
                 </RoleToggle>
-              </TableCell>
-              <TableCell>
-                {member.role === 'ROLE_ADMIN' ? (
-                  <span>-</span>
-                ) : (
-                  <GradeBadge grade={getGradeByMileage(member.mileage)}>
-                    {getGradeByMileage(member.mileage)} ({member.mileage?.toLocaleString()}원)
-                  </GradeBadge>
-                )}
               </TableCell>
               <TableCell>
                 <StatusBadge status={member.status === 'Y' ? '회원' : '탈퇴'}>
@@ -230,6 +198,7 @@ const Member = () => {
         <PageButton onClick={goToLastPage}>&raquo;</PageButton>
       </Pagination>
     </Container>
+    </>
   );
 };
 

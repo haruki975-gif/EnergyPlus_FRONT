@@ -10,7 +10,6 @@ import {
   Hero,
   HeroContent,
   Button,
-  Button2,
   InfoSectionGrid,
   InfoCard,
   CardImage,
@@ -23,7 +22,6 @@ import {
   ActionSection,
   StepSection,
   StepList,
-  ButtonGroup,
 } from "./MainSection2.style";
 
 import {
@@ -34,7 +32,6 @@ import {
   FaHandsHelping,
   FaBicycle,
   FaBoxOpen,
-  FaCheckCircle,
 } from "react-icons/fa";
 
 const MainSection2 = () => {

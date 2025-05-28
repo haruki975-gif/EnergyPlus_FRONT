@@ -124,7 +124,7 @@ const LoginForm = () => {
             비밀번호 찾기
           </LinkItem>
           <Separator>|</Separator>
-          <LinkItem onClick={() => navigate("/signup")}>회원가입</LinkItem>
+          <LinkItem onClick={() => navigate("/agreement")}>회원가입</LinkItem>
         </LinkContainer>
 
         {/* 구분선 */}

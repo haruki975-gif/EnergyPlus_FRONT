@@ -28,7 +28,8 @@ const Nav = () => {
           <li className="nav-item">
             챌린지
             <ul>
-              <li onClick={() => navi("/challenges")}>챌린지 안내</li>
+              <li onClick={() => navi("/challenge/info")}>챌린지 안내</li>
+              <li onClick={() => navi("/challenges")}>챌린지 목록</li>
               <li onClick={() => navi("/challenges/write")}>챌린지 신청</li>
             </ul>
           </li>

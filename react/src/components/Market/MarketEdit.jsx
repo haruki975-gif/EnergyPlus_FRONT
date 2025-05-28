@@ -190,8 +190,7 @@ const MarketEdit = () => {
         {[0, 1, 2].map((i) => (
           <label key={i} className="label-flex img-label">
             <div>
-              {i === 0 ? "썸네일" : `${i}번째 상세 이미지`}{" "}
-              <em className="text-danger">*</em>
+              상세 이미지 <em className="text-danger">*</em>
             </div>
             {!deletedImages[i] && existingImages[i] && !images[i] && (
               <div className="image-box">

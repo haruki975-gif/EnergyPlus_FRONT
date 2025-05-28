@@ -5,12 +5,16 @@ import {
   Wrapper,
   HeaderRow,
   Title,
-  ContentDiv,
-  ContentTitle,
-  ContentDetail,
   BackBtn,
   SearchButton
 } from "../../TableStyle/Table.style";
+import {
+  WriteFormWrapper,
+  FormSection,
+  Label,
+  StyledInput,
+  StyledTextarea
+} from "../../TableStyle/Write.style";
 
 const AdminNoticeEdit = () => {
   const { noticeId } = useParams();
@@ -23,8 +27,8 @@ const AdminNoticeEdit = () => {
   });
 
   useEffect(() => {
-    axios.get(`http://localhost/admin/notices/${noticeId}`,{
-      headers : {
+    axios.get(`http://localhost/admin/notices/${noticeId}`, {
+      headers: {
         Authorization: `Bearer ${token}`
       }
     })
@@ -65,30 +69,31 @@ const AdminNoticeEdit = () => {
   return (
     <Wrapper>
       <HeaderRow>
-        <Title>📢 공지사항 수정 (관리자)</Title>
+        <Title>📢 공지사항 수정 </Title>
       </HeaderRow>
 
-      <ContentDiv>
-        <ContentTitle>
-          <input
+      <WriteFormWrapper>
+        <FormSection>
+          <Label>제목</Label>
+          <StyledInput
             type="text"
             name="noticeTitle"
             value={form.noticeTitle}
             onChange={handleChange}
             placeholder="제목을 입력하세요"
-            style={{ width: "100%", padding: "0.5rem", fontSize: "1.2rem" }}
           />
-        </ContentTitle>
-        <ContentDetail>
-          <textarea
+        </FormSection>
+
+        <FormSection>
+          <Label>내용</Label>
+          <StyledTextarea
             name="noticeContent"
             value={form.noticeContent}
             onChange={handleChange}
             placeholder="내용을 입력하세요"
-            style={{ width: "100%", height: "300px", padding: "0.5rem", fontSize: "1rem" }}
           />
-        </ContentDetail>
-      </ContentDiv>
+        </FormSection>
+      </WriteFormWrapper>
 
       <div style={{ display: "flex", gap: "1rem", marginTop: "2rem" }}>
         <SearchButton onClick={handleSubmit}>수정 완료</SearchButton>

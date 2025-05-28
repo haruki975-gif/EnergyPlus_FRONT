@@ -15,6 +15,19 @@ import {
   BackBtn
 } from "../TableStyle/Table.style";
 
+function getUserIdFromToken() {
+  const token = sessionStorage.getItem("accessToken");
+  if (!token) return null;
+
+  try {
+    const payload = token.split('.')[1];
+    const decoded = JSON.parse(atob(payload));
+    return decoded.sub;
+  } catch (e) {
+    console.error("토큰 파싱 실패", e);
+    return null;
+  }
+}
 
 const ChallengeDetail = () => {
   const { challengeSeq } = useParams();
@@ -28,24 +41,29 @@ const ChallengeDetail = () => {
       .then(res => {
         setChallenge(res.data);
       })
-      .catch(err => console.error("챌린지 상세 불러오기 실패", err));
   }, [challengeSeq]);
 
   const handleEdit = () => navi(`/challenges/edit/${challengeSeq}`);
-  const handleDelete = async () => {
-    if (!window.confirm("정말 삭제하시겠습니까?")) return;
 
+  const handleDelete = async () => {
+
+    if (!window.confirm("정말 삭제하시겠습니까?")) return;
+  
     try {
-      await axios.delete(`http://localhost/challenges/${challengeSeq}`);
+      await axios.delete(`http://localhost/challenges/${challengeSeq}`, {
+        headers: {
+          Authorization: undefined
+        }
+      });
       alert("삭제가 완료되었습니다.");
       navi("/challenges");
-
     } catch (err) {
       console.error("삭제 실패", err);
       alert("삭제 중 오류가 발생했습니다.");
       navi("/challenges");
     }
   };
+  
 
   if (!challenge) return <Wrapper>로딩 중...</Wrapper>;
 
@@ -55,10 +73,12 @@ const ChallengeDetail = () => {
         <HeaderRow>
           <Title>챌린지 상세 확인</Title>
           <SearchBox>
+            {getUserIdFromToken() == challenge.userId && (
               <>
                 <SearchButton onClick={handleEdit}>글 수정</SearchButton>
                 <DeleteButton onClick={handleDelete}>글 삭제</DeleteButton>
               </>
+            )}
           </SearchBox>
         </HeaderRow>
 
@@ -87,7 +107,7 @@ const ChallengeDetail = () => {
           </ContentDetail>
         </ContentDiv>
 
-        <BackBtn onClick={() => navi(-1)}>뒤로가기</BackBtn>
+        <BackBtn onClick={() => navi("/challenges")}>목록으로</BackBtn>
       </Wrapper>
     </>
   );

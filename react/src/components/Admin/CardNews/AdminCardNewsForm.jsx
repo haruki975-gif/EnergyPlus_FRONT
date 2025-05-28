@@ -2,7 +2,7 @@ import axios from "axios";
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
-const CardNewsForm = () => {
+const AdminCardNewsForm = () => {
   const navi = useNavigate();
 
   const [isAuthorized, setIsAuthorized] = useState(null);
@@ -55,7 +55,7 @@ const CardNewsForm = () => {
       });
 
       alert("카드뉴스 등록 완료!");
-      navi("/cardnews/list");
+      navi("/admin/cardnews");
     } catch (err) {
       console.error(err);
       alert("등록 실패!");
@@ -116,4 +116,4 @@ const CardNewsForm = () => {
   );
 };
 
-export default CardNewsForm;
+export default AdminCardNewsForm;

@@ -95,8 +95,11 @@ const MypageMarketDetail = () => {
         </div>
 
         <div className="market-detail-buttons">
+        <button className="btn market-btn" onClick={() => navi(`/markets/edit/${market.marketNo}`)}>
+            수정하기
+          </button>
           <button className="btn market-btn" onClick={() => navi("/mypage_market")}>
-            목록
+            목록으로
           </button>
         </div>
 

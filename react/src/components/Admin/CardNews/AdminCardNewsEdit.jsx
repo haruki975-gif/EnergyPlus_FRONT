@@ -2,7 +2,7 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 
-const CardNewsEdit = () => {
+const AdminCardNewsEdit = () => {
   const { id } = useParams(); // ← 변수명 통일
   const navigate = useNavigate();
 
@@ -73,10 +73,10 @@ const CardNewsEdit = () => {
       })
       .then(() => {
         alert("카드뉴스 수정 완료!");
-        navigate("/cardnews");
+        navigate("/admin/cardnews");
       })
       .catch((err) => {
-        alert("수정 실패 😥");
+        alert("수정 실패");
         console.error(err);
         console.log(err.response);
       });
@@ -132,4 +132,4 @@ const CardNewsEdit = () => {
   );
 };
 
-export default CardNewsEdit;
+export default AdminCardNewsEdit;

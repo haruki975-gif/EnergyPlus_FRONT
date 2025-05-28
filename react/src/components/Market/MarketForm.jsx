@@ -48,12 +48,12 @@ const MarketForm = () => {
         },
       })
       .then((res) => {
-        alert("등록 성공!");
+        alert("등록 완료되었습니다.");
         navigate(`/markets/${res.data.marketNo}`);
       })
       .catch((err) => {
         console.error(err);
-        alert("등록 실패");
+        alert("등록 실패되었습니다.");
       });
   };
 
