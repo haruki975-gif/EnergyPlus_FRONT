@@ -9,11 +9,14 @@ import {
   Tooltip,
   Legend,
 } from "chart.js";
+import global from "../../../conf";
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Tooltip, Legend);
 
 const Chart1 = () => {
   const [chartData, setChartData] = useState(null);
+
+  const apiUrl = global.API_URL;
 
   useEffect(() => {
     const fetchAllPages = async () => {
@@ -22,7 +25,7 @@ const Chart1 = () => {
       for (let page = 1; page <= 10; page++) {
         try {
           const res = await axios.get(
-            `http://localhost/apis/energyUsage1?pageNo=${page}`
+            `${apiUrl}/apis/energyUsage1?pageNo=${page}`
           );
 
           const items = res.data.opentable?.field || [];

@@ -2,11 +2,14 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { Pie } from "react-chartjs-2";
 import { Chart as ChartJS, ArcElement, Tooltip, Legend } from "chart.js";
+import global from "../../../conf";
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 
 const Chart2 = () => {
   const [pieChartData, setPieChartData] = useState(null);
+
+  const apiUrl = global.API_URL;
 
   useEffect(() => {
     const fetchEnergyUsage2 = async () => {
@@ -15,7 +18,7 @@ const Chart2 = () => {
       for (let page = 1; page <= 10; page++) {
         try {
           const res = await axios.get(
-            `http://localhost/apis/energyUsage2?pageNo=${page}`
+            `${apiUrl}/apis/energyUsage2?pageNo=${page}`
           );
           console.log(`energyUsage2 page ${page}:`, res.data);
 
